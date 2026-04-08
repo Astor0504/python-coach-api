@@ -1,0 +1,11 @@
+{
+  "name": "python-study-coach",
+  "version": "1.0.0",
+  "description": "Python 入門學習教練 + Azure TTS + Claude",
+  "private": true,
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  }
+}
