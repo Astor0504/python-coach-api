@@ -244,9 +244,9 @@ http.createServer(async (req, res) => {
   } catch(e){
     sendJson(res, 400, {error:e.message});
   }
-}).listen(PORT, () => {
+}).listen(PORT, '0.0.0.0', () => {
   console.log(`\n  🐍 Python 教學網站`);
-  console.log(`  ▶ http://localhost:${PORT}`);
+  console.log(`  ▶ http://0.0.0.0:${PORT}`);
   console.log(`  Azure TTS：${AZURE_KEY ? '✅ '+AZURE_REGION : '❌ 未設定'}`);
   console.log(`  Chat 代理：${ANTHROPIC_KEY ? '✅ '+ANTHROPIC_MODEL : '❌ 未設定'}`);
   console.log(`  CORS：${ALLOWED_ORIGINS.join(', ')}`);
