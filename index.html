@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0d1117">
 <meta name="api-base" content="https://python-coach-api.vercel.app">
+<meta name="description" content="互動式 Python 入門學習教練：Claude AI 對話式教學、Azure 自然語音朗讀、從基礎語法到實戰練習。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Python 入門學習教練">
+<meta property="og:description" content="互動式 Python 入門學習教練：Claude AI 對話式教學、Azure 自然語音朗讀、從基礎語法到實戰練習。">
+<meta property="og:locale" content="zh_TW">
+<meta name="twitter:card" content="summary">
 <title>Python 入門學習教練</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐍</text></svg>">
 <style>
@@ -1423,10 +1429,13 @@ async function callAPI(userMsg) {
     systemPrompt += `\n\n當前正在學習的章節：${currentChapter.title}（${currentChapter.context}）`;
   }
 
+  const ctrl = new AbortController();
+  const timeout = setTimeout(() => ctrl.abort(), 45_000);
   try {
     const resp = await fetch(API_BASE + '/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      signal: ctrl.signal,
       body: JSON.stringify({
         max_tokens: 1000,
         system: systemPrompt,
@@ -1474,13 +1483,17 @@ async function callAPI(userMsg) {
     }
   } catch (e) {
     removeTyping();
-    if (!navigator.onLine) {
+    if (e.name === 'AbortError') {
+      addMessage('coach', '⏳ 請求逾時（45 秒），伺服器可能忙碌中，請稍後再試。');
+    } else if (!navigator.onLine) {
       addMessage('coach', '🌐 網路已斷線，請確認網路連線後再試。');
     } else if (e instanceof TypeError) {
       addMessage('coach', '🌐 無法連線至 API 伺服器，請檢查網路或防火牆設定。');
     } else {
       addMessage('coach', '😅 連線失敗，請重新整理頁面再試一次。');
     }
+  } finally {
+    clearTimeout(timeout);
   }
 
   isLoading = false;
