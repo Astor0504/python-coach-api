@@ -16,7 +16,7 @@
 //   AZURE_KEY         Azure Speech subscription key       （TTS 必須）
 //   AZURE_REGION      Azure region，例如 eastasia          （預設 eastasia）
 //   ANTHROPIC_KEY     Claude API key                      （/chat 必須）
-//   ANTHROPIC_MODEL   模型名稱                             （預設 claude-haiku-4-5）
+//   ANTHROPIC_MODEL   模型名稱                             （預設 claude-sonnet-4-6）
 //   PORT              埠號                                 （預設 5173）
 //   ALLOWED_ORIGINS   CORS 白名單，逗號分隔；* 代表全開     （預設 *，正式環境請設具體網域）
 //   RATE_LIMIT_RPM    每 IP 每分鐘最大請求數                （預設 60）
@@ -26,14 +26,16 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
+const { applyCors, preflight } = require('./api/_cors');
+const { applyRateLimit, RATE_LIMIT_RPM } = require('./api/_rateLimit');
 
 const PORT = process.env.PORT || 5174;
 const AZURE_KEY = process.env.AZURE_KEY || '';
 const AZURE_REGION = process.env.AZURE_REGION || 'eastasia';
 const ANTHROPIC_KEY = process.env.ANTHROPIC_KEY || '';
 const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6';
+// 僅供啟動 banner 顯示用；實際 CORS 判斷邏輯在 api/_cors.js（applyCors）
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '*').split(',').map(s => s.trim());
-const RATE_LIMIT_RPM = parseInt(process.env.RATE_LIMIT_RPM || '60', 10);
 const ROOT = __dirname;
 
 const MIME = {
@@ -42,40 +44,6 @@ const MIME = {
   '.png':'image/png', '.jpg':'image/jpeg', '.mp3':'audio/mpeg', '.ico':'image/x-icon',
   '.woff':'font/woff', '.woff2':'font/woff2', '.ttf':'font/ttf'
 };
-
-// ───────── Rate limit（簡易記憶體版；多實例請改 Redis）─────────
-const rateBuckets = new Map();
-function rateLimitCheck(ip){
-  const now = Date.now();
-  const win = 60_000;
-  let b = rateBuckets.get(ip);
-  if (!b){ b = { count:0, reset:now+win }; rateBuckets.set(ip, b); }
-  if (now > b.reset){ b.count = 0; b.reset = now + win; }
-  b.count++;
-  return b.count <= RATE_LIMIT_RPM;
-}
-// 每 5 分鐘清掉過期 bucket
-setInterval(() => {
-  const now = Date.now();
-  for (const [k,v] of rateBuckets) if (now > v.reset + 60_000) rateBuckets.delete(k);
-}, 5 * 60_000);
-
-function getIP(req){
-  return (req.headers['x-forwarded-for']||'').split(',')[0].trim() || req.socket.remoteAddress || 'unknown';
-}
-
-// ───────── CORS ─────────
-function applyCors(req, res){
-  const origin = req.headers.origin || '';
-  if (ALLOWED_ORIGINS.includes('*')){
-    res.setHeader('Access-Control-Allow-Origin', '*');
-  } else if (origin && ALLOWED_ORIGINS.includes(origin)){
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Vary', 'Origin');
-  }
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-}
 
 // ───────── JSON body ─────────
 function readJson(req, max=200_000){
@@ -211,15 +179,14 @@ function serveStatic(req, res){
 
 // ───────── Main ─────────
 http.createServer(async (req, res) => {
-  applyCors(req, res);
-  if (req.method === 'OPTIONS'){ res.writeHead(204); return res.end(); }
+  if (applyCors(req, res)) return;
+  if (preflight(req, res)) return;
 
   const p = url.parse(req.url).pathname;
-  const ip = getIP(req);
 
   // 僅對 API 套 rate limit
   if (p === '/tts' || p === '/chat' || p === '/voices'){
-    if (!rateLimitCheck(ip)) return sendJson(res, 429, {error:'rate limit exceeded'});
+    if (applyRateLimit(req, res)) return;
   }
 
   try {

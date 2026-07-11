@@ -1,5 +1,6 @@
 const https = require('https');
 const { applyCors, preflight } = require('./_cors');
+const { applyRateLimit } = require('./_rateLimit');
 
 function readJson(req, max = 200_000) {
   return new Promise((resolve, reject) => {
@@ -16,8 +17,9 @@ function readJson(req, max = 200_000) {
 }
 
 module.exports = async (req, res) => {
-  applyCors(req, res);
+  if (applyCors(req, res)) return;
   if (preflight(req, res)) return;
+  if (applyRateLimit(req, res)) return;
   if (req.method !== 'POST') { res.statusCode = 405; return res.end('method not allowed'); }
 
   const ANTHROPIC_KEY = process.env.ANTHROPIC_KEY || '';
@@ -47,6 +49,7 @@ module.exports = async (req, res) => {
     hostname: 'api.anthropic.com',
     path: '/v1/messages',
     method: 'POST',
+    timeout: 20000,
     headers: {
       'Content-Type': 'application/json',
       'x-api-key': ANTHROPIC_KEY,
@@ -61,6 +64,7 @@ module.exports = async (req, res) => {
       res.end(data);
     });
   });
+  apiReq.on('timeout', () => apiReq.destroy(new Error('upstream timeout')));
   apiReq.on('error', e => { res.statusCode = 502; res.end(JSON.stringify({ error: e.message })); });
   apiReq.write(payload);
   apiReq.end();

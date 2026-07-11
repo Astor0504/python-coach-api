@@ -1,7 +1,7 @@
 const { applyCors, preflight } = require('./_cors');
 
 module.exports = (req, res) => {
-  applyCors(req, res);
+  if (applyCors(req, res)) return;
   if (preflight(req, res)) return;
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.end(JSON.stringify({

@@ -10,12 +10,19 @@
 <meta property="og:title" content="Python 入門學習教練">
 <meta property="og:description" content="互動式 Python 入門學習教練：Claude AI 對話式教學、Azure 自然語音朗讀、從基礎語法到實戰練習。">
 <meta property="og:locale" content="zh_TW">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://python-coach-api.vercel.app/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://python-coach-api.vercel.app/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://python-coach-api.vercel.app/og-image.png">
 <title>Python 入門學習教練</title>
+<link rel="canonical" href="https://python-coach-api.vercel.app/">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐍</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&family=Sora:wght@400;600;800&display=swap">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&family=Sora:wght@300;400;600;800&display=swap');
-
   :root {
     --bg: #0d1117;
     --surface: #161b22;
@@ -27,7 +34,7 @@
     --accent4: #d2a8ff;
     --text: #e6edf3;
     --text-muted: #8b949e;
-    --text-dim: #484f58;
+    --text-dim: #6e7681;
     --user-bubble: #1f3a5f;
     --coach-bubble: #1a2332;
   }
@@ -704,7 +711,7 @@
   <div class="progress-bar-wrap">
     <div class="progress-label">
       <span>學習進度</span>
-      <span id="prog-text">0 / 16 章節</span>
+      <span id="prog-text">0 / 19 章節</span>
     </div>
     <div class="progress-bar">
       <div class="progress-fill" id="prog-fill" style="width:0%"></div>
@@ -722,16 +729,16 @@
     </div>
     <div class="topbar-actions">
       <button class="btn-action" onclick="clearChat()">清除對話</button>
-      <button class="btn-action primary" onclick="markDone()">✓ 學完了！</button>
+      <button class="btn-action primary" id="mark-done-btn" onclick="markDone()">✓ 學完了！</button>
     </div>
   </div>
 
-  <div id="chat-area">
+  <div id="chat-area" aria-live="polite" aria-atomic="false">
     <div class="welcome-card">
       <div class="wc-emoji">🐍</div>
       <h2>你好！我是你的 Python 學習教練</h2>
       <p>
-        我已經熟讀了你上傳的 <strong style="color:var(--accent2)">《Python 程式設計入門共學營》</strong> 完整課程（345 頁），
+        我已經熟讀了你上傳的 <strong style="color:var(--accent2)">《Python 程式設計入門共學營》</strong> 完整課程內容，
         可以陪你從零開始學 Python！<br><br>
         你可以從左側選擇章節，或直接告訴我你想學什麼。
         不懂的地方盡管問，我會用最白話的方式解釋 ✨
@@ -762,43 +769,93 @@
 <script>
 const CHAPTERS = [
   { id: 0, num: "CH 01", title: "開始之前：學習動機與目標", emoji: "🎯",
-    context: "確認學習動機和目標、了解程式設計的基本概念" },
+    context: "確認學習動機和目標、了解程式設計的基本概念",
+    detail: "學習動機、目標設定、為什麼學程式" },
   { id: 1, num: "CH 02", title: "Python 程式設計概論", emoji: "📖",
-    context: "程式是什麼、演算法、流程圖、虛擬碼、Python 介紹" },
+    context: "程式是什麼、演算法、流程圖、虛擬碼、Python 介紹",
+    detail: "程式是什麼（data structure + algorithm）、演算法、流程圖、虛擬碼、Python 是直譯式語言" },
   { id: 2, num: "CH 03", title: "變數、物件型別與運算式", emoji: "📦",
-    context: "Python 世界都是物件、變數命名、int/float/bool/str/None 型別、型別轉換、四則運算" },
+    context: "Python 世界都是物件、變數命名、int/float/bool/str/None 型別、型別轉換、四則運算",
+    detail: "Python 世界都是物件、變數命名規則（不能數字開頭、不能有特殊符號）、基本型別 int/float/bool/str/None、type() 函式、型別轉換 int()/float()/str()、四則運算（+/-/*///%/**)" },
   { id: 3, num: "CH 04", title: "使用者輸入輸出與字串操作", emoji: "⌨️",
-    context: "input()、print()、字串串接、字串方法 upper/lower/strip/split 等" },
+    context: "input()、print()、字串串接、字串方法 upper/lower/strip/split 等、f-string 格式化（現代 Python 首選寫法，比 + 串接更常用）",
+    detail: "input() 輸入、print() 輸出、字串串接用 +、字串方法 upper()/lower()/strip()/split()/replace()" },
   { id: 4, num: "CH 05", title: "if else 條件判斷", emoji: "🔀",
-    context: "if/elif/else、比較運算子、邏輯運算子 and/or/not、巢狀條件" },
+    context: "if/elif/else、比較運算子、邏輯運算子 and/or/not、巢狀條件",
+    detail: "if/elif/else、比較運算子 ==/>/</>=/<=/ !=、邏輯運算子 and/or/not、巢狀 if" },
   { id: 5, num: "CH 06", title: "容器：List、Tuple、Set、Dict", emoji: "🗂️",
-    context: "list 列表、tuple 元組、set 集合、dict 字典的建立與操作" },
+    context: "list 列表、tuple 元組、set 集合、dict 字典的建立與操作",
+    detail: "list（可變）、tuple（不可變、效能較好）、set（不重複）、dict（key-value），各自操作方法" },
   { id: 6, num: "CH 07", title: "可變與不可變物件", emoji: "🔒",
-    context: "mutable vs immutable、pass by reference vs value 概念" },
+    context: "mutable vs immutable、pass by reference vs value 概念",
+    detail: "mutable vs immutable 概念、Python 變數是參考不是複製、id() 函式" },
   { id: 7, num: "CH 08", title: "for / while 迴圈", emoji: "🔁",
-    context: "for 迴圈、while 迴圈、range()、break、continue" },
+    context: "for 迴圈、while 迴圈、range()、break、continue、list comprehension（列表推導式）",
+    detail: "for 迴圈搭配 range()、while 迴圈、break 跳出、continue 略過" },
   { id: 8, num: "CH 09", title: "Turtle 海龜繪圖", emoji: "🐢",
-    context: "turtle 模組、繪圖基礎、前進/轉向/畫圓" },
+    context: "turtle 模組、繪圖基礎、前進/轉向/畫圓",
+    detail: "import turtle、forward/backward/left/right/circle/goto 等指令" },
   { id: 9, num: "CH 10", title: "函式 Function", emoji: "⚙️",
-    context: "def 定義函式、參數、return 回傳值、docstring、作用域 scope" },
+    context: "def 定義函式、參數、return 回傳值、docstring、作用域 scope",
+    detail: "def 定義函式、parameters 參數、return 回傳值、docstring、global/local scope" },
   { id: 10, num: "CH 11", title: "Decorator 裝飾器", emoji: "🎀",
-    context: "decorator 概念、@語法糖、實際應用場景" },
+    context: "decorator 概念、@語法糖、實際應用場景",
+    detail: "@decorator 語法、常見應用（登入驗證、logging）" },
   { id: 11, num: "CH 12", title: "物件導向 OOP / 類別", emoji: "🏗️",
-    context: "class 類別、__init__、self、屬性、方法、繼承" },
+    context: "class 類別、__init__、self、屬性、方法、繼承",
+    detail: "class 類別、__init__ 建構子、self、屬性 attribute、方法 method、繼承 inheritance" },
   { id: 12, num: "CH 13", title: "開發環境設定", emoji: "💻",
-    context: "本機安裝 Python、VS Code、虛擬環境、pip" },
+    context: "本機安裝 Python、VS Code、虛擬環境、pip",
+    detail: "安裝 Python、VS Code、虛擬環境 venv、pip 安裝套件" },
   { id: 13, num: "CH 14", title: "模組 Module 使用與設計", emoji: "📦",
-    context: "import 模組、自訂模組、常用標準函式庫" },
+    context: "import 模組、自訂模組、常用標準函式庫",
+    detail: "import 語法、自訂模組、常用標準函式庫 math/random/datetime 等" },
   { id: 14, num: "CH 15", title: "錯誤處理與撰寫測試", emoji: "🛡️",
-    context: "try/except/finally、自訂例外、unittest 測試" },
+    context: "try/except/finally、自訂例外、unittest 測試",
+    detail: "try/except/finally、常見錯誤類型、unittest 單元測試" },
   { id: 15, num: "CH 16+", title: "專案實作：爬蟲 / 遊戲", emoji: "🚀",
-    context: "Web Crawler 網路爬蟲、requests、BeautifulSoup、PyGame 小遊戲" },
+    context: "Web Crawler 網路爬蟲、requests、BeautifulSoup、PyGame 小遊戲",
+    detail: "requests+BeautifulSoup 網路爬蟲、PyGame 遊戲製作" },
   { id: 16, num: "補充 A", title: "Git 版本控制", emoji: "🌿", bonus: true,
-    context: "Git 核心概念、init/add/commit/push/pull、branch 分支、merge、GitHub 使用、.gitignore、解決 conflict、職場 Git 工作流程" },
+    context: "Git 核心概念、init/add/commit/push/pull、branch 分支、merge、GitHub 使用、.gitignore、解決 conflict、職場 Git 工作流程",
+    detail: [
+      "為什麼需要版本控制？用「存檔歷史紀錄」比喻",
+      "核心概念：Repository（倉庫）、Commit（快照）、Branch（分支）、Merge（合併）",
+      "常用指令：git init、git add、git commit -m、git status、git log",
+      "遠端操作：git push、git pull、git clone",
+      "GitHub 使用：建立 repo、push 上去、README.md",
+      ".gitignore：哪些檔案不該上傳（__pycache__、.env、venv/）",
+      "分支工作流程：feature branch → PR → merge",
+      "解決 merge conflict：什麼是衝突、怎麼手動解決",
+      "職場 Git 規範：commit message 怎麼寫（feat/fix/docs 前綴）"
+    ] },
   { id: 17, num: "補充 B", title: "檔案 I/O 讀寫", emoji: "📁", bonus: true,
-    context: "open() 函式、讀取 txt 文字檔、寫入檔案、with 陳述式（context manager）、讀寫 CSV 用 csv 模組和 pandas、讀寫 JSON 用 json 模組、常見錯誤處理" },
+    context: "open() 函式、讀取 txt 文字檔、寫入檔案、with 陳述式（context manager）、讀寫 CSV 用 csv 模組和 pandas、讀寫 JSON 用 json 模組、常見錯誤處理",
+    detail: [
+      "為什麼需要檔案讀寫？程式關掉資料就消失的問題",
+      "open() 函式：mode 參數 r/w/a/rb/wb、encoding='utf-8'",
+      "讀取方式：read()、readline()、readlines()、for line in file",
+      "寫入方式：write()、writelines()",
+      "with 陳述式（context manager）：自動關閉檔案、為什麼比手動 close() 好",
+      "讀寫 CSV：csv.reader、csv.writer、pandas read_csv / to_csv",
+      "讀寫 JSON：json.load()、json.dump()、json.loads()、json.dumps()",
+      "路徑處理：os.path 和 pathlib.Path",
+      "常見錯誤：FileNotFoundError、UnicodeDecodeError"
+    ] },
   { id: 18, num: "補充 C", title: "Type Hints 型別注解", emoji: "🏷️", bonus: true,
-    context: "為什麼要用 type hints、基本語法 int/str/float/bool、List/Dict/Tuple/Optional、函式參數與回傳值注解、Union、mypy 靜態檢查、現代 Python 3.10+ 語法、面試常見考法" },
+    context: "為什麼要用 type hints、基本語法 int/str/float/bool、List/Dict/Tuple/Optional、函式參數與回傳值注解、Union、mypy 靜態檢查、現代 Python 3.10+ 語法、面試常見考法",
+    detail: [
+      "為什麼要用 type hints？讓程式碼更清楚、減少 bug、IDE 提示、團隊協作",
+      "基本語法：變數注解 x: int = 5、函式參數 def greet(name: str) -> str",
+      "容器型別：list[int]、dict[str, int]、tuple[int, str]、set[float]",
+      "Optional：Optional[str] 等同 str | None，代表可以是 None",
+      "Union：Union[int, str] 或新語法 int | str（Python 3.10+）",
+      "Any：from typing import Any，代表任意型別（盡量少用）",
+      "Callable：函式作為參數時的注解",
+      "mypy 靜態型別檢查：pip install mypy、指令 mypy script.py",
+      "現代 Python 3.9+ 內建泛型：直接寫 list[int] 不用 from typing import List",
+      "面試技巧：type hints 展現程式碼品質意識"
+    ] },
 ];
 
 let currentChapter = null;
@@ -817,59 +874,25 @@ const API_BASE = (function(){
   return '';
 })();
 
-const SYSTEM_PROMPT = `你是一位溫暖、有耐心的 Python 程式設計學習教練，專門幫助完全沒有程式基礎的初學者學習。
+const SYSTEM_PROMPT = (function(){
+  // 章節條列以 CHAPTERS 為單一事實來源動態生成，避免手動維護兩份重複資料。
+  const chapterLines = CHAPTERS.filter(ch => !ch.bonus).map(ch => {
+    const chNum = ch.num.replace('CH ', '').replace(/^0/, '');
+    return `章節 ${chNum}：${ch.title} - ${ch.detail}`;
+  }).join('\n');
+
+  const bonusBlocks = CHAPTERS.filter(ch => ch.bonus).map(ch => {
+    const letter = ch.num.replace('補充 ', '');
+    const bullets = ch.detail.map(line => `- ${line}`).join('\n');
+    return `【補充章節 ${letter}】${ch.title}：\n${bullets}`;
+  }).join('\n\n');
+
+  return `你是一位溫暖、有耐心的 Python 程式設計學習教練，專門幫助完全沒有程式基礎的初學者學習。
 你的教學方式基於《Python 程式設計入門共學營》這份課程，以下是課程涵蓋的章節內容：
 
-章節 1：開始之前 - 學習動機、目標設定、為什麼學程式
-章節 2：Python 概論 - 程式是什麼（data structure + algorithm）、演算法、流程圖、虛擬碼、Python 是直譯式語言
-章節 3：變數與型別 - Python 世界都是物件、變數命名規則（不能數字開頭、不能有特殊符號）、基本型別 int/float/bool/str/None、type() 函式、型別轉換 int()/float()/str()、四則運算（+/-/*///%/**)
-章節 4：輸入輸出與字串 - input() 輸入、print() 輸出、字串串接用 +、字串方法 upper()/lower()/strip()/split()/replace()
-章節 5：條件判斷 - if/elif/else、比較運算子 ==/>/</>=/<=/ !=、邏輯運算子 and/or/not、巢狀 if
-章節 6：資料容器 - list（可變）、tuple（不可變、效能較好）、set（不重複）、dict（key-value），各自操作方法
-章節 7：可變與不可變 - mutable vs immutable 概念、Python 變數是參考不是複製、id() 函式
-章節 8：迴圈 - for 迴圈搭配 range()、while 迴圈、break 跳出、continue 略過
-章節 9：Turtle 繪圖 - import turtle、forward/backward/left/right/circle/goto 等指令
-章節 10：函式 - def 定義函式、parameters 參數、return 回傳值、docstring、global/local scope
-章節 11：Decorator - @decorator 語法、常見應用（登入驗證、logging）
-章節 12：物件導向 - class 類別、__init__ 建構子、self、屬性 attribute、方法 method、繼承 inheritance
-章節 13：開發環境 - 安裝 Python、VS Code、虛擬環境 venv、pip 安裝套件
-章節 14：模組 - import 語法、自訂模組、常用標準函式庫 math/random/datetime 等
-章節 15：錯誤處理 - try/except/finally、常見錯誤類型、unittest 單元測試
-章節 16+：專案實作 - requests+BeautifulSoup 網路爬蟲、PyGame 遊戲製作
+${chapterLines}
 
-【補充章節 A】Git 版本控制：
-- 為什麼需要版本控制？用「存檔歷史紀錄」比喻
-- 核心概念：Repository（倉庫）、Commit（快照）、Branch（分支）、Merge（合併）
-- 常用指令：git init、git add、git commit -m、git status、git log
-- 遠端操作：git push、git pull、git clone
-- GitHub 使用：建立 repo、push 上去、README.md
-- .gitignore：哪些檔案不該上傳（__pycache__、.env、venv/）
-- 分支工作流程：feature branch → PR → merge
-- 解決 merge conflict：什麼是衝突、怎麼手動解決
-- 職場 Git 規範：commit message 怎麼寫（feat/fix/docs 前綴）
-
-【補充章節 B】檔案 I/O 讀寫：
-- 為什麼需要檔案讀寫？程式關掉資料就消失的問題
-- open() 函式：mode 參數 r/w/a/rb/wb、encoding='utf-8'
-- 讀取方式：read()、readline()、readlines()、for line in file
-- 寫入方式：write()、writelines()
-- with 陳述式（context manager）：自動關閉檔案、為什麼比手動 close() 好
-- 讀寫 CSV：csv.reader、csv.writer、pandas read_csv / to_csv
-- 讀寫 JSON：json.load()、json.dump()、json.loads()、json.dumps()
-- 路徑處理：os.path 和 pathlib.Path
-- 常見錯誤：FileNotFoundError、UnicodeDecodeError
-
-【補充章節 C】Type Hints 型別注解：
-- 為什麼要用 type hints？讓程式碼更清楚、減少 bug、IDE 提示、團隊協作
-- 基本語法：變數注解 x: int = 5、函式參數 def greet(name: str) -> str
-- 容器型別：list[int]、dict[str, int]、tuple[int, str]、set[float]
-- Optional：Optional[str] 等同 str | None，代表可以是 None
-- Union：Union[int, str] 或新語法 int | str（Python 3.10+）
-- Any：from typing import Any，代表任意型別（盡量少用）
-- Callable：函式作為參數時的注解
-- mypy 靜態型別檢查：pip install mypy、指令 mypy script.py
-- 現代 Python 3.9+ 內建泛型：直接寫 list[int] 不用 from typing import List
-- 面試技巧：type hints 展現程式碼品質意識
+${bonusBlocks}
 
 教學原則：
 1. 永遠用最白話、最有趣的方式解釋，多用生活中的比喻
@@ -880,6 +903,7 @@ const SYSTEM_PROMPT = `你是一位溫暖、有耐心的 Python 程式設計學�
 6. 對話用繁體中文，程式碼用英文
 7. 適當用 emoji 讓對話有活力但不要過多
 8. 回答要有組織，適當分段，但不要太長（除非學生問很複雜的問題）`;
+})();
 
 function renderSidebar() {
   const list = document.getElementById('chapter-list');
@@ -924,6 +948,7 @@ function startLesson(chId) {
   currentChapter = ch;
   document.getElementById('current-title').innerHTML = `${ch.emoji} ${ch.title} <span>${ch.num}</span>`;
   renderSidebar();
+  updateMarkDoneBtn();
 
   let prompt;
   if (ch.bonus) {
@@ -1015,20 +1040,32 @@ function addMessage(role, content) {
 let codeBlockId = 0;
 
 function formatMessage(text) {
-  // Code blocks
+  // 先把 code block / inline code 抽成佔位符並單獨跳脫，
+  // 避免等一下對「其餘文字」整段 escapeHtml 時把 code 內容重複跳脫一次。
+  const codeStash = [];
+  const stash = (html) => {
+    const token = '@@CB' + codeStash.length + '@@';
+    codeStash.push(html);
+    return token;
+  };
+
+  // Code blocks（先處理帶語言標籤的 ```python，再處理一般 ```）
   text = text.replace(/```python\n?([\s\S]*?)```/g, (_, code) => {
     const id = 'code-' + (codeBlockId++);
-    return `<pre><span class="lang-label">PYTHON</span><button class="copy-btn" onclick="copyCode('${id}')">複製</button><code id="${id}">${escapeHtml(code.trim())}</code></pre>`;
+    return stash(`<pre><span class="lang-label">PYTHON</span><button class="copy-btn" onclick="copyCode('${id}')">複製</button><code id="${id}">${escapeHtml(code.trim())}</code></pre>`);
   });
   text = text.replace(/```\n?([\s\S]*?)```/g, (_, code) => {
     const id = 'code-' + (codeBlockId++);
-    return `<pre><button class="copy-btn" onclick="copyCode('${id}')">複製</button><code id="${id}">${escapeHtml(code.trim())}</code></pre>`;
+    return stash(`<pre><button class="copy-btn" onclick="copyCode('${id}')">複製</button><code id="${id}">${escapeHtml(code.trim())}</code></pre>`);
   });
 
-  // Inline code (with XSS escape)
-  text = text.replace(/`([^`]+)`/g, (_, code) => '<code>' + escapeHtml(code) + '</code>');
+  // Inline code（同樣抽成佔位符，內容單獨跳脫）
+  text = text.replace(/`([^`]+)`/g, (_, code) => stash('<code>' + escapeHtml(code) + '</code>'));
 
-  // Bold
+  // 其餘文字（非 code 部分）整段跳脫，防止模型輸出的原始文字挾帶 HTML/script 造成 XSS
+  text = escapeHtml(text);
+
+  // Bold（跳脫後 * # - | 等 markdown 符號本身不受影響，以下 regex 仍可正常比對）
   text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 
   // Italic / accent
@@ -1067,6 +1104,9 @@ function formatMessage(text) {
   text = text.replace(/<p><\/p>/g, '');
   text = text.replace(/<p>(<pre|<ul|<h3|<div|<table)/g, '$1');
   text = text.replace(/(<\/pre>|<\/ul>|<\/h3>|<\/div>|<\/table>)<\/p>/g, '$1');
+
+  // 放回已單獨跳脫好的 code block / inline code
+  text = text.replace(/@@CB(\d+)@@/g, (_, i) => codeStash[Number(i)]);
 
   return text;
 }
@@ -1128,6 +1168,43 @@ function ttsSplit(text){
   return text.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '').replace(/\s+/g,' ').split(/(?<=[。！？!?；;])/).map(s=>s.trim()).filter(Boolean);
 }
 
+const TTS_CACHE_NAME = 'tts-v1';
+const TTS_CACHE_MAX = 80;
+const TTS_CACHE_EVICT = 10;
+
+async function ttsCachedFetch(url, payload){
+  const doFetch = () => fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  try {
+    if (!('caches' in window) || !(window.crypto && window.crypto.subtle)) return await doFetch();
+
+    const keyStr = `${payload.text}|${payload.voice}|${payload.rate}`;
+    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(keyStr));
+    const hashHex = Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+    const cacheKey = new Request('https://tts-cache.local/' + hashHex);
+
+    const cache = await caches.open(TTS_CACHE_NAME);
+    const cached = await cache.match(cacheKey);
+    if (cached) return cached;
+
+    const resp = await doFetch();
+    if (resp.ok) {
+      await cache.put(cacheKey, resp.clone());
+      const keys = await cache.keys();
+      if (keys.length > TTS_CACHE_MAX) {
+        await Promise.all(keys.slice(0, TTS_CACHE_EVICT).map(k => cache.delete(k)));
+      }
+    }
+    return resp;
+  } catch (e) {
+    return doFetch();
+  }
+}
+
 async function ttsNext(){
   if (__ttsIdx >= __ttsQueue.length){ ttsSetStatus('idle'); return; }
   const myEpoch = __ttsEpoch;
@@ -1138,11 +1215,7 @@ async function ttsNext(){
     try {
       const ratePct = Math.round((ttsGetRate() - 1) * 100);
       const r = (ratePct >= 0 ? '+' : '') + ratePct + '%';
-      const resp = await fetch(TTS_API + '/api/tts', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ text: text.slice(0, 4000), voice: ttsGetVoice(), rate: r })
-      });
+      const resp = await ttsCachedFetch(TTS_API + '/api/tts', { text: text.slice(0, 4000), voice: ttsGetVoice(), rate: r });
       if (__ttsEpoch !== myEpoch) return;
       if (!resp.ok) throw new Error('tts '+resp.status);
       const blob = await resp.blob();
@@ -1215,25 +1288,25 @@ function ttsInitPanel(){
   const style = document.createElement('style');
   style.textContent = `
     #ttsFab{position:fixed;width:48px;height:48px;border-radius:50%;
-      background:#f78166;color:#fff;border:0;cursor:grab;font-size:22px;
+      background:var(--accent);color:#fff;border:0;cursor:grab;font-size:22px;
       box-shadow:0 4px 16px rgba(0,0,0,.3);z-index:999;
       transition:transform .15s, box-shadow .15s;
       touch-action:none;user-select:none;-webkit-user-select:none}
     #ttsFab:hover{transform:scale(1.08)}
     #ttsFab.dragging{cursor:grabbing;transform:scale(1.12);box-shadow:0 8px 24px rgba(0,0,0,.4);transition:none}
     #ttsPanel{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(20px);
-      background:#161b22;border:1px solid #30363d;border-radius:16px;
+      background:var(--surface);border:1px solid var(--border);border-radius:16px;
       box-shadow:0 8px 28px rgba(0,0,0,.5);padding:10px 14px;display:none;
       align-items:center;gap:8px;z-index:1002;flex-wrap:wrap;max-width:calc(100vw - 40px);
       opacity:0;transition:opacity .2s, transform .2s;color:#c9d1d9;font-family:inherit}
     #ttsPanel.open{display:flex;opacity:1;transform:translateX(-50%) translateY(0)}
-    #ttsPanel button.tts-ico{background:#21262d;border:1px solid #30363d;border-radius:10px;
+    #ttsPanel button.tts-ico{background:var(--surface2);border:1px solid var(--border);border-radius:10px;
       width:38px;height:38px;font-size:16px;cursor:pointer;color:#c9d1d9;
       display:inline-flex;align-items:center;justify-content:center}
-    #ttsPanel button.tts-ico:hover{background:#30363d;border-color:#f78166}
-    #ttsPanel select{background:#0d1117;color:#c9d1d9;border:1px solid #30363d;
+    #ttsPanel button.tts-ico:hover{background:var(--border);border-color:var(--accent)}
+    #ttsPanel select{background:var(--bg);color:#c9d1d9;border:1px solid var(--border);
       border-radius:8px;padding:6px 8px;font-family:inherit;font-size:13px;max-width:180px}
-    #ttsPanel .lbl{font-size:13px;color:#8b949e;display:flex;align-items:center;gap:6px}
+    #ttsPanel .lbl{font-size:13px;color:var(--text-muted);display:flex;align-items:center;gap:6px}
   `;
   document.head.appendChild(style);
 
@@ -1388,6 +1461,7 @@ function showTyping() {
   const div = document.createElement('div');
   div.className = 'msg coach';
   div.id = 'typing-indicator';
+  div.setAttribute('aria-hidden', 'true');
   div.innerHTML = `
     <div class="avatar coach">🐍</div>
     <div class="bubble">
@@ -1410,18 +1484,11 @@ async function callAPI(userMsg) {
   document.getElementById('send-btn').disabled = true;
   showTyping();
 
-  const messages = [];
-  // Add history (last 10 turns for context)
+  // history 最後一筆本來就是當前 userMsg（addMessage 在呼叫 callAPI 前已存入），
+  // 原樣轉成 API 需要的 {role, content} 格式即可，不做過濾（過濾會誤刪重複文字的舊訊息，
+  // 導致連續同角色訊息、Anthropic API 400）
   const recentHistory = history.slice(-20);
-  recentHistory.forEach(m => {
-    if (m.content !== userMsg || m.role !== 'user') {
-      messages.push({ role: m.role, content: m.content });
-    }
-  });
-  // Ensure last message is the current user message
-  if (messages.length === 0 || messages[messages.length-1].content !== userMsg) {
-    messages.push({ role: 'user', content: userMsg });
-  }
+  const messages = recentHistory.map(m => ({ role: m.role, content: m.content }));
 
   // Add chapter context if selected
   let systemPrompt = SYSTEM_PROMPT;
@@ -1539,14 +1606,33 @@ function clearChat() {
   document.getElementById('quick-replies').innerHTML = '';
 }
 
+function updateMarkDoneBtn() {
+  const btn = document.getElementById('mark-done-btn');
+  if (!btn) return;
+  btn.textContent = (currentChapter && done.has(currentChapter.id))
+    ? '✓ 已完成（點擊取消）'
+    : '✓ 學完了！';
+}
+
 function markDone() {
   if (!currentChapter) {
     addMessage('coach', '請先從左側選擇一個章節，學完後再點「學完了！」哦 😊');
     return;
   }
+
+  if (done.has(currentChapter.id)) {
+    // 已完成 → 再按一次取消完成
+    done.delete(currentChapter.id);
+    localStorage.setItem('py_done', JSON.stringify([...done]));
+    renderSidebar();
+    updateMarkDoneBtn();
+    return;
+  }
+
   done.add(currentChapter.id);
   localStorage.setItem('py_done', JSON.stringify([...done]));
   renderSidebar();
+  updateMarkDoneBtn();
 
   const nextId = currentChapter.id + 1;
   if (nextId < CHAPTERS.length) {
