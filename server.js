@@ -25,7 +25,6 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
-const url = require('url');
 const { applyCors, preflight } = require('./api/_cors');
 const { applyRateLimit, RATE_LIMIT_RPM } = require('./api/_rateLimit');
 
@@ -64,6 +63,14 @@ function readJson(req, max=200_000){
 function sendJson(res, code, obj){
   res.writeHead(code, {'Content-Type':'application/json; charset=utf-8'});
   res.end(JSON.stringify(obj));
+}
+
+function requestPath(req){
+  try {
+    return new URL(req.url, 'http://localhost').pathname;
+  } catch (e) {
+    return '/';
+  }
 }
 
 // ───────── Azure TTS ─────────
@@ -166,7 +173,7 @@ function anthropicChat(body, res){
 
 // ───────── Static ─────────
 function serveStatic(req, res){
-  let p = decodeURIComponent(url.parse(req.url).pathname);
+  let p = decodeURIComponent(requestPath(req));
   if (p === '/') p = '/index.html';
   const full = path.normalize(path.join(ROOT, p));
   if (!full.startsWith(ROOT)){ res.writeHead(403); return res.end('forbidden'); }
@@ -182,7 +189,9 @@ http.createServer(async (req, res) => {
   if (applyCors(req, res)) return;
   if (preflight(req, res)) return;
 
-  const p = url.parse(req.url).pathname;
+  const rawPath = requestPath(req);
+  // 本機同時接受 /chat 與 Vercel 相同的 /api/chat 契約。
+  const p = rawPath.replace(/^\/api(?=\/)/, '');
 
   // 僅對 API 套 rate limit
   if (p === '/tts' || p === '/chat' || p === '/voices'){

@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0d1117">
+<meta name="theme-color" content="#f2efe7">
 <meta name="api-base" content="https://python-coach-api.vercel.app">
 <meta name="description" content="互動式 Python 入門學習教練：Claude AI 對話式教學、Azure 自然語音朗讀、從基礎語法到實戰練習。">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Python 入門學習教練">
+<meta property="og:title" content="PY / TRACE — Python 自動化學習實驗室">
 <meta property="og:description" content="互動式 Python 入門學習教練：Claude AI 對話式教學、Azure 自然語音朗讀、從基礎語法到實戰練習。">
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://python-coach-api.vercel.app/og-image.png">
@@ -16,12 +16,12 @@
 <meta property="og:url" content="https://python-coach-api.vercel.app/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://python-coach-api.vercel.app/og-image.png">
-<title>Python 入門學習教練</title>
+<title>PY / TRACE｜Python 自動化學習實驗室</title>
 <link rel="canonical" href="https://python-coach-api.vercel.app/">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐍</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23c9f33f%22/><text x=%2250%22 y=%2263%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-weight=%22900%22 font-size=%2242%22 fill=%22%23101216%22>PY</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;600&family=Sora:wght@400;600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;600;700&display=swap">
 <style>
   :root {
     --bg: #0d1117;
@@ -696,21 +696,35 @@
     .welcome-card { padding: 20px 16px; }
   }
 </style>
-<script defer src="/_vercel/insights/script.js"></script></head>
+<link rel="stylesheet" href="python-trace.css?v=1">
+<script>
+  if (location.protocol !== 'file:') {
+    const insights = document.createElement('script');
+    insights.defer = true;
+    insights.src = '/_vercel/insights/script.js';
+    document.head.appendChild(insights);
+  }
+</script></head>
 <body>
 
-<button id="hamburger" onclick="toggleSidebar()" aria-label="開啟選單">☰</button>
+<button id="hamburger" onclick="toggleSidebar()" aria-label="開啟選單">
+  <span></span><span></span>
+</button>
 <div id="sidebar-overlay" onclick="closeSidebar()"></div>
 
 <!-- SIDEBAR -->
 <div id="sidebar" role="tablist" aria-label="章節選單">
   <div class="sidebar-header">
-    <div class="logo">Python <span>Coach</span></div>
-    <div class="subtitle">🏕️ 共學營學習教練 · 初學者版</div>
+    <div class="brand-lockup" aria-label="PY TRACE">
+      <strong><span>PY</span><i>/</i>TRACE</strong>
+      <small>PYTHON SYSTEMS LAB</small>
+    </div>
+    <div class="sidebar-edition">AUTOMATION TRACK · 2026</div>
   </div>
   <div class="progress-bar-wrap">
+    <div class="progress-kicker">MISSION MAP</div>
     <div class="progress-label">
-      <span>學習進度</span>
+      <span>完成進度</span>
       <span id="prog-text">0 / 19 章節</span>
     </div>
     <div class="progress-bar">
@@ -718,37 +732,69 @@
     </div>
   </div>
   <div class="chapter-list" id="chapter-list"></div>
+  <div class="sidebar-footer">
+    <span class="status-dot"></span>
+    <span id="system-status-label">AI COACH / TTS READY</span>
+    <b>v1.0</b>
+  </div>
 </div>
 
 <!-- MAIN -->
 <div id="main">
   <div class="topbar">
     <div class="current-chapter" id="current-title">
-      Python 入門共學營
-      <span>選擇章節開始學習</span>
+      <small>ACTIVE MISSION</small>
+      <strong>PYTHON TRACE LAB</strong>
+      <span>選擇一個任務，開始建立你的自動化能力</span>
     </div>
     <div class="topbar-actions">
-      <button class="btn-action" onclick="clearChat()">清除對話</button>
-      <button class="btn-action primary" id="mark-done-btn" onclick="markDone()">✓ 學完了！</button>
+      <div class="workspace-status" id="runtime-status"><span></span>COACH ONLINE</div>
+      <button class="btn-action" onclick="clearChat()">RESET</button>
+      <button class="btn-action primary" id="mark-done-btn" onclick="markDone()">完成任務 ↗</button>
     </div>
   </div>
 
   <div id="chat-area" aria-live="polite" aria-atomic="false">
     <div class="welcome-card">
-      <div class="wc-emoji">🐍</div>
-      <h2>你好！我是你的 Python 學習教練</h2>
-      <p>
-        我已經熟讀了你上傳的 <strong style="color:var(--accent2)">《Python 程式設計入門共學營》</strong> 完整課程內容，
-        可以陪你從零開始學 Python！<br><br>
-        你可以從左側選擇章節，或直接告訴我你想學什麼。
-        不懂的地方盡管問，我會用最白話的方式解釋 ✨
-      </p>
-      <div class="start-chips">
-        <button class="start-chip" onclick="startLesson(0)">🚀 從頭開始學</button>
-        <button class="start-chip" onclick="askQuestion('什麼是變數？用最簡單的方式解釋給我聽')">📦 變數是什麼？</button>
-        <button class="start-chip" onclick="startLesson(16)">🌿 Git 版本控制</button>
-        <button class="start-chip" onclick="startLesson(17)">📁 檔案讀寫</button>
-        <button class="start-chip" onclick="startLesson(18)">🏷️ Type Hints</button>
+      <div class="welcome-copy">
+        <div class="welcome-kicker"><span></span> PYTHON AUTOMATION LAB · 19 MISSIONS</div>
+        <h2>STOP REPEATING.<br><em>START SCRIPTING.</em></h2>
+        <p class="welcome-intro">
+          看懂每一行怎麼執行，再把重複工作交給 Python。
+          這裡沒有艱深術語轟炸，只有清楚解釋、可執行範例與真正用得到的自動化練習。
+        </p>
+        <div class="start-chips">
+          <button class="start-chip primary-start" onclick="startLesson(0)">開始第 01 個任務 <span>↗</span></button>
+          <button class="start-chip" onclick="askQuestion('什麼是變數？用最簡單的方式解釋給我聽')">先理解變數</button>
+          <button class="start-chip" onclick="startLesson(17)">用 Python 處理檔案</button>
+          <button class="start-chip" onclick="startLesson(16)">建立 Git 工作流</button>
+        </div>
+        <div class="welcome-metrics">
+          <div><strong>19</strong><span>MISSIONS</span></div>
+          <div><strong>01</strong><span>AI COACH</span></div>
+          <div><strong>∞</strong><span>QUESTIONS</span></div>
+        </div>
+      </div>
+      <div class="trace-stage" aria-hidden="true">
+        <div class="trace-stage-head">
+          <span>TRACE_001.PY</span>
+          <div><i></i><i></i><i></i></div>
+        </div>
+        <div class="trace-code">
+          <div class="code-line"><b>01</b><code><span class="kw">for</span> attempt <span class="kw">in</span> journey:</code></div>
+          <div class="code-line"><b>02</b><code>&nbsp;&nbsp;&nbsp;&nbsp;write()</code></div>
+          <div class="code-line active"><b>03</b><code>&nbsp;&nbsp;&nbsp;&nbsp;break_it()</code></div>
+          <div class="code-line"><b>04</b><code>&nbsp;&nbsp;&nbsp;&nbsp;understand()</code></div>
+          <div class="code-line"><b>05</b><code></code></div>
+          <div class="code-line"><b>06</b><code><span class="fn">automate</span>(<span class="str">"the boring part"</span>)</code></div>
+          <span class="execution-cursor"></span>
+        </div>
+        <div class="trace-output">
+          <span>OUTPUT / LIVE</span>
+          <strong>understanding += 1</strong>
+          <small>Process completed in 0.019s</small>
+        </div>
+        <div class="trace-index">PY<br>01</div>
       </div>
     </div>
   </div>
@@ -756,13 +802,19 @@
   <div class="quick-replies" id="quick-replies"></div>
 
   <div class="input-area">
+    <div class="composer-label">
+      <span>REPL / ASK · RUN · DEBUG</span>
+      <span>AI 回覆可使用語音朗讀</span>
+    </div>
     <div class="input-wrap">
-      <textarea id="user-input" placeholder="問我任何問題，或輸入你的程式碼讓我幫你檢查..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <span class="prompt-symbol">&gt;&gt;&gt;</span>
+      <textarea id="user-input" placeholder="問問題，或貼上你的 Python 程式碼..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
       <button id="send-btn" onclick="sendMessage()" title="送出" aria-label="送出訊息">
-        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+        <span>RUN</span>
+        <svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
       </button>
     </div>
-    <div class="input-hint">按 Enter 送出 · Shift+Enter 換行</div>
+    <div class="input-hint">ENTER 執行 · SHIFT + ENTER 換行</div>
   </div>
 </div>
 
@@ -859,20 +911,140 @@ const CHAPTERS = [
 ];
 
 let currentChapter = null;
-let done = new Set(JSON.parse(localStorage.getItem('py_done') || '[]'));
+let done;
+try {
+  const storedDone = JSON.parse(localStorage.getItem('py_done') || '[]');
+  done = new Set(Array.isArray(storedDone) ? storedDone : []);
+} catch (e) {
+  localStorage.removeItem('py_done');
+  done = new Set();
+}
 let history = [];
 let isLoading = false;
 
+const IS_FILE_PREVIEW = location.protocol === 'file:';
+const IS_LOCAL_NODE = !IS_FILE_PREVIEW &&
+  /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])$/.test(location.hostname) &&
+  location.port === '5174';
+
 // 後端 API base 設定優先序：
-//   1. <meta name="api-base" content="https://your-backend"> — 部署時用這個
-//   2. 本機 file:// 開發 → localhost:5174
-//   3. 其他（同源部署）→ 空字串（相對路徑）
+//   1. file:// → 內建本機課程模式，不呼叫付費 API
+//   2. localhost:5174 → 本機 Node server 的無前綴路由
+//   3. <meta name="api-base"> → Vercel /api 路由
+//   4. 其他同源部署 → /api 相對路徑
 const API_BASE = (function(){
+  if (IS_FILE_PREVIEW) return '';
+  if (IS_LOCAL_NODE) return location.origin;
   const meta = document.querySelector('meta[name="api-base"]');
   if (meta && meta.content) return meta.content.replace(/\/$/, '');
-  if (location.protocol === 'file:') return 'http://localhost:5174';
   return '';
 })();
+
+function apiUrl(endpoint) {
+  const clean = String(endpoint).replace(/^\/+/, '');
+  const prefix = IS_LOCAL_NODE ? '' : '/api';
+  return `${API_BASE}${prefix}/${clean}`;
+}
+
+const LOCAL_EXAMPLES = [
+  `goal = "把每週報表自動化"\npractice_minutes = 20\nprint(f"目標：{goal}")\nprint(f"今天練習 {practice_minutes} 分鐘")`,
+  `steps = ["讀取資料", "整理資料", "輸出結果"]\nfor number, step in enumerate(steps, start=1):\n    print(number, step)`,
+  `project = "自動整理檔案"\nfiles_count = 12\nis_ready = True\nprint(project, files_count, is_ready)`,
+  `name = input("你的名字：")\ntask = "整理 Excel"\nprint(f"{name} 正在學習用 Python {task}")`,
+  `score = 82\nif score >= 80:\n    print("可以進入下一個任務")\nelse:\n    print("再練習一次")`,
+  `tasks = ["寄信", "整理資料", "備份"]\nsettings = {"format": "xlsx", "notify": True}\nprint(tasks[0])\nprint(settings["format"])`,
+  `original = ["raw.csv"]\ncopy = original.copy()\ncopy.append("clean.csv")\nprint("original:", original)\nprint("copy:", copy)`,
+  `files = ["a.csv", "b.csv", "c.txt"]\nfor file in files:\n    if file.endswith(".csv"):\n        print("處理", file)`,
+  `import turtle\npen = turtle.Turtle()\nfor _ in range(4):\n    pen.forward(100)\n    pen.right(90)`,
+  `def format_report(name, rows):\n    return f"{name}: {rows} rows"\n\nprint(format_report("sales.csv", 128))`,
+  `def log_call(func):\n    def wrapper():\n        print("開始執行")\n        return func()\n    return wrapper\n\n@log_call\ndef run():\n    print("整理完成")\n\nrun()`,
+  `class Report:\n    def __init__(self, name):\n        self.name = name\n\n    def export(self):\n        print(f"匯出 {self.name}")\n\nReport("weekly.xlsx").export()`,
+  `# 終端機指令\n# python3 -m venv .venv\n# source .venv/bin/activate\n# python --version\nprint("環境準備完成")`,
+  `from pathlib import Path\nfrom datetime import date\n\noutput = Path(f"report-{date.today()}.txt")\nprint(output)`,
+  `from pathlib import Path\n\ntry:\n    text = Path("data.txt").read_text(encoding="utf-8")\nexcept FileNotFoundError:\n    text = "找不到檔案，改用預設內容"\n\nprint(text)`,
+  `from pathlib import Path\n\nfor file in Path("downloads").glob("*.csv"):\n    target = file.with_name(file.stem + "-clean.csv")\n    print(file.name, "→", target.name)`,
+  `commands = ["git status", "git add .", "git commit -m 'feat: add report'"]\nfor command in commands:\n    print(command)`,
+  `from pathlib import Path\n\npath = Path("notes.txt")\npath.write_text("Python automation", encoding="utf-8")\nprint(path.read_text(encoding="utf-8"))`,
+  `def total(values: list[int]) -> int:\n    return sum(values)\n\nscores: list[int] = [80, 92, 88]\nprint(total(scores))`,
+];
+
+const LOCAL_PRACTICE = [
+  '列出一件你每週至少重複兩次的工作，並把它拆成三個可以交給程式執行的步驟。',
+  '把「讀取、整理、輸出」三個步驟放進 list，再用迴圈逐行印出。',
+  '建立三個變數：任務名稱、檔案數量、是否完成，並用 type() 查看型別。',
+  '詢問使用者姓名與工作項目，再用 f-string 組成一句完整訊息。',
+  '寫一個條件：檔案數量大於 10 時批次處理，否則逐一處理。',
+  '用 list 保存三個任務，再用 dict 保存輸出格式與通知設定。',
+  '複製一個 list 後修改副本，觀察原始 list 是否改變。',
+  '只處理檔名以 .csv 結尾的項目，並略過其他格式。',
+  '用 Turtle 畫出正方形，再試著改成六角形。',
+  '寫一個函式，接收檔名與資料筆數，回傳報表摘要。',
+  '做一個 decorator，在函式執行前後各印出一行紀錄。',
+  '建立一個 Report 類別，加入檔名屬性與 export 方法。',
+  '建立虛擬環境，啟用後確認 Python 版本與 pip 路徑。',
+  '匯入 pathlib 與 datetime，產生包含今天日期的輸出檔名。',
+  '讀取不存在的檔案，使用 try/except 顯示友善訊息。',
+  '掃描資料夾中的 CSV，規劃清理後的新檔名。',
+  '建立 Git repo，完成第一次 commit，並查看 git log。',
+  '把三行文字寫入檔案，再逐行讀回並去除換行。',
+  '為一個計算平均值的函式補上參數與回傳值型別。',
+];
+
+function localCoachReply(userMsg) {
+  if (!currentChapter) {
+    return `## LOCAL TRACE MODE
+
+目前是可以直接開啟的本機課程模式。請先從左側選擇一個任務，我會提供內建解釋、程式碼與練習。
+
+💡 需要完整 AI 追問時，請使用已部署的線上版本。`;
+  }
+
+  const chapter = currentChapter;
+  const wantsExercise = /練習|題目|試試|checkpoint/i.test(userMsg);
+  const wantsExample = /範例|例子|程式碼|code/i.test(userMsg);
+  const wantsWork = /工作|實務|應用|怎麼用/i.test(userMsg);
+  const heading = wantsExercise ? 'CHECKPOINT' :
+    wantsExample ? 'TRACE EXAMPLE' :
+    wantsWork ? 'WORKFLOW USE' : 'MISSION BRIEF';
+  const context = String(chapter.context).replace(/[*_#~]/g, '');
+  const example = LOCAL_EXAMPLES[chapter.id] || 'print("Hello, Python")';
+  const practice = LOCAL_PRACTICE[chapter.id] || '修改範例中的值，再執行一次並觀察結果。';
+
+  if (wantsExercise) {
+    return `## ${heading} / ${chapter.title}
+
+🧩 ${practice}
+
+完成後，把你的程式碼貼到輸入框。線上 AI Coach 可以逐行協助檢查；本機模式則可繼續查看內建範例。`;
+  }
+
+  return `## ${heading} / ${chapter.title}
+
+**核心概念：** ${context}
+
+先把流程看成「輸入 → 處理 → 輸出」。Python 的價值，是把明確而重複的步驟寫成可以再次執行的規則。
+
+\`\`\`python
+${example}
+\`\`\`
+
+🧩 ${practice}
+
+💡 LOCAL TRACE MODE 使用內建課程內容，不會傳送資料或呼叫付費 API。完整自由問答請使用線上版本。`;
+}
+
+function syncRuntimeStatus() {
+  document.documentElement.dataset.runtime = IS_FILE_PREVIEW ? 'offline' : (IS_LOCAL_NODE ? 'local' : 'online');
+  const runtime = document.getElementById('runtime-status');
+  const system = document.getElementById('system-status-label');
+  if (IS_FILE_PREVIEW) {
+    if (runtime) runtime.innerHTML = '<span></span>LOCAL TRACE';
+    if (system) system.textContent = 'LOCAL LESSON / TTS READY';
+  } else if (IS_LOCAL_NODE) {
+    if (runtime) runtime.innerHTML = '<span></span>LOCAL SERVER';
+    if (system) system.textContent = 'LOCAL API / TTS READY';
+  }
+}
 
 const SYSTEM_PROMPT = (function(){
   // 章節條列以 CHAPTERS 為單一事實來源動態生成，避免手動維護兩份重複資料。
@@ -915,7 +1087,7 @@ function renderSidebar() {
     if (ch.bonus && !bonusDividerAdded) {
       const divider = document.createElement('div');
       divider.className = 'bonus-divider';
-      divider.textContent = '✦ 補充技能';
+      divider.textContent = 'FIELD MODULES';
       list.appendChild(divider);
       bonusDividerAdded = true;
     }
@@ -929,9 +1101,10 @@ function renderSidebar() {
     div.setAttribute('aria-current', currentChapter?.id === ch.id ? 'true' : 'false');
     div.setAttribute('tabindex', '0');
     div.innerHTML = `
-      <div class="ch-num">${ch.num}${ch.bonus ? '<span class="bonus-badge">NEW</span>' : ''}</div>
-      <div class="ch-title">${ch.emoji} ${ch.title}</div>
-      ${done.has(ch.id) ? '<div class="ch-done-badge">✓</div>' : ''}
+      <div class="ch-num">${ch.num}${ch.bonus ? '<span class="bonus-badge">FIELD</span>' : ''}</div>
+      <div class="ch-title">${ch.title}</div>
+      <div class="ch-track">${ch.bonus ? 'FIELD MODULE' : 'CORE TRACK'}</div>
+      ${done.has(ch.id) ? '<div class="ch-done-badge">DONE</div>' : '<div class="ch-arrow">↗</div>'}
     `;
     div.onclick = () => { startLesson(ch.id); closeSidebar(); };
     div.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startLesson(ch.id); closeSidebar(); } };
@@ -944,9 +1117,18 @@ function renderSidebar() {
 }
 
 function startLesson(chId) {
+  if (isLoading) return;
+  if (IS_FILE_PREVIEW) {
+    history = [];
+    document.getElementById('chat-area').innerHTML = '';
+    document.getElementById('quick-replies').innerHTML = '';
+  }
   const ch = CHAPTERS[chId];
   currentChapter = ch;
-  document.getElementById('current-title').innerHTML = `${ch.emoji} ${ch.title} <span>${ch.num}</span>`;
+  document.getElementById('current-title').innerHTML = `
+    <small>ACTIVE MISSION · ${ch.num}</small>
+    <strong>${ch.title}</strong>
+    <span>${ch.bonus ? 'FIELD MODULE' : 'CORE TRACK'}</span>`;
   renderSidebar();
   updateMarkDoneBtn();
 
@@ -967,22 +1149,23 @@ function startLesson(chId) {
 
   if (ch.bonus) {
     setQuickReplies([
-      '📝 給我一個完整範例',
-      '🧩 給我一道練習題',
-      '🤔 我還不太懂，換個方式解釋',
-      '💼 這個在工作上怎麼用？'
+      '給我一個完整範例',
+      '給我一道練習題',
+      '換個方式解釋',
+      '這個在工作上怎麼用？'
     ]);
   } else {
     setQuickReplies([
-      '📝 給我一個範例程式碼',
-      '🤔 我還不太懂，再解釋一次',
-      '🧩 給我一道練習題',
-      '➡️ 教我下一個概念'
+      '給我一個範例程式碼',
+      '再解釋一次',
+      '給我一道練習題',
+      '教我下一個概念'
     ]);
   }
 }
 
 function askQuestion(q) {
+  if (isLoading) return;
   addMessage('user', q);
   callAPI(q);
 }
@@ -990,16 +1173,20 @@ function askQuestion(q) {
 function setQuickReplies(chips) {
   const el = document.getElementById('quick-replies');
   el.innerHTML = '';
-  chips.forEach(c => {
+  chips.forEach((c, index) => {
     const btn = document.createElement('button');
     btn.className = 'chip';
-    btn.textContent = c;
-    btn.onclick = () => askQuestion(c);
+    const label = typeof c === 'string' ? c : c.label;
+    btn.innerHTML = `<span>${String(index + 1).padStart(2, '0')}</span>${escapeHtml(label)}`;
+    btn.onclick = () => {
+      if (typeof c === 'string') askQuestion(c);
+      else if (typeof c.action === 'function' && !isLoading) c.action();
+    };
     el.appendChild(btn);
   });
 }
 
-function addMessage(role, content) {
+function addMessage(role, content, options = {}) {
   const area = document.getElementById('chat-area');
 
   // Remove welcome card if present
@@ -1007,24 +1194,23 @@ function addMessage(role, content) {
   if (wc) wc.remove();
 
   const div = document.createElement('div');
-  div.className = `msg ${role}`;
+  div.className = `msg ${role}${options.kind ? ` ${options.kind}` : ''}`;
 
   const avatar = document.createElement('div');
   avatar.className = `avatar ${role}`;
-  avatar.textContent = role === 'coach' ? '🐍' : '👤';
+  avatar.textContent = options.kind === 'notice' ? 'SYS' : (role === 'coach' ? 'PY' : 'YOU');
 
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
   bubble.innerHTML = role === 'coach' ? formatMessage(content) : escapeHtml(content);
 
-  if (role === 'coach' && window.speechSynthesis) {
+  if (role === 'coach' && options.speakable !== false) {
     const speakBtn = document.createElement('button');
     speakBtn.className = 'speak-btn';
-    speakBtn.textContent = '🔊 朗讀';
+    speakBtn.innerHTML = '<span class="speak-wave"><i></i><i></i><i></i><i></i></span><span>LISTEN</span>';
     speakBtn.setAttribute('aria-label', '朗讀此訊息');
     speakBtn.onclick = function() {
-      this.classList.toggle('active');
-      speakText(content);
+      speakText(content, this);
     };
     bubble.appendChild(speakBtn);
   }
@@ -1034,7 +1220,17 @@ function addMessage(role, content) {
   area.appendChild(div);
   area.scrollTop = area.scrollHeight;
 
-  history.push({ role: role === 'coach' ? 'assistant' : 'user', content });
+  if (options.record !== false) {
+    history.push({ role: role === 'coach' ? 'assistant' : 'user', content });
+  }
+}
+
+function addSystemNotice(content) {
+  addMessage('coach', content, {
+    kind: 'notice',
+    record: false,
+    speakable: false,
+  });
 }
 
 let codeBlockId = 0;
@@ -1125,7 +1321,6 @@ function copyCode(id) {
 }
 
 // ─── Azure TTS + 浮動控制面板（播放/暫停/語速/語音/停止）───
-const TTS_API = API_BASE;
 const TTS_LS = { rate:'tts.rate', voice:'tts.azVoice' };
 function ttsGetRate(){ return parseFloat(localStorage.getItem(TTS_LS.rate) || '1.05'); }
 function ttsGetVoice(){ return localStorage.getItem(TTS_LS.voice) || 'zh-TW-HsiaoChenNeural'; }
@@ -1138,12 +1333,17 @@ let __ttsEpoch = 0;
 
 async function probeAzure(){
   if (__ttsAzureOK !== null) return __ttsAzureOK;
+  if (IS_FILE_PREVIEW) {
+    __ttsAzureOK = false;
+    ttsRefreshVoiceList();
+    return false;
+  }
   try {
-    const r = await fetch(TTS_API + '/api/health', { cache:'no-store' });
+    const r = await fetch(apiUrl('health'), { cache:'no-store' });
     const d = await r.json();
     __ttsAzureOK = !!(d && d.azure);
     if (__ttsAzureOK){
-      const vr = await fetch(TTS_API + '/api/voices');
+      const vr = await fetch(apiUrl('voices'));
       const list = await vr.json();
       __ttsVoices = (list||[]).filter(v => /^zh-(TW|CN|HK)/.test(v.locale));
       ttsRefreshVoiceList();
@@ -1206,7 +1406,7 @@ async function ttsCachedFetch(url, payload){
 }
 
 async function ttsNext(){
-  if (__ttsIdx >= __ttsQueue.length){ ttsSetStatus('idle'); return; }
+  if (__ttsIdx >= __ttsQueue.length){ ttsSetStatus('idle'); clearActiveBtns(); return; }
   const myEpoch = __ttsEpoch;
   const text = __ttsQueue[__ttsIdx];
   const useAzure = await probeAzure();
@@ -1215,7 +1415,7 @@ async function ttsNext(){
     try {
       const ratePct = Math.round((ttsGetRate() - 1) * 100);
       const r = (ratePct >= 0 ? '+' : '') + ratePct + '%';
-      const resp = await ttsCachedFetch(TTS_API + '/api/tts', { text: text.slice(0, 4000), voice: ttsGetVoice(), rate: r });
+      const resp = await ttsCachedFetch(apiUrl('tts'), { text: text.slice(0, 4000), voice: ttsGetVoice(), rate: r });
       if (__ttsEpoch !== myEpoch) return;
       if (!resp.ok) throw new Error('tts '+resp.status);
       const blob = await resp.blob();
@@ -1232,7 +1432,7 @@ async function ttsNext(){
     }
   }
   // Fallback：瀏覽器
-  if (!window.speechSynthesis){ ttsSetStatus('idle'); return; }
+  if (!window.speechSynthesis){ ttsSetStatus('idle'); clearActiveBtns(); return; }
   const utt = new SpeechSynthesisUtterance(text);
   utt.lang = 'zh-TW';
   utt.rate = ttsGetRate();
@@ -1245,7 +1445,7 @@ async function ttsNext(){
   window.speechSynthesis.speak(utt);
 }
 
-async function speakText(text) {
+async function speakText(text, sourceBtn) {
   const clean = String(text)
     .replace(/```[\s\S]*?```/g,'（程式碼區塊略過）')
     .replace(/`([^`]+)`/g,'$1')
@@ -1257,6 +1457,7 @@ async function speakText(text) {
     ttsStopAll(); return;
   }
   ttsStopAll();
+  if (sourceBtn) sourceBtn.classList.add('active');
   __ttsQueue = ttsSplit(clean);
   __ttsIdx = 0;
   ttsShowPanel();
@@ -1268,7 +1469,20 @@ function ttsSetStatus(s){
   const btn = document.querySelector('#ttsPanel [data-act="toggle"]');
   if (btn) btn.textContent = (s === 'playing') ? '⏸' : '▶';
 }
-function ttsShowPanel(){ document.getElementById('ttsPanel')?.classList.add('open'); }
+function syncTtsDock(){
+  const input = document.querySelector('.input-area');
+  const quick = document.getElementById('quick-replies');
+  const targets = [input];
+  if (quick && quick.children.length && quick.getBoundingClientRect().height > 0) targets.push(quick);
+  const tops = targets.filter(Boolean).map(el => el.getBoundingClientRect().top);
+  const dockTop = tops.length ? Math.min(...tops) : innerHeight - 100;
+  const offset = Math.max(16, Math.ceil(innerHeight - dockTop + 14));
+  document.documentElement.style.setProperty('--tts-dock-offset', `${offset}px`);
+}
+function ttsShowPanel(){
+  syncTtsDock();
+  document.getElementById('ttsPanel')?.classList.add('open');
+}
 function ttsRefreshVoiceList(){
   const sel = document.querySelector('#ttsPanel [data-act="voice"]');
   if (!sel) return;
@@ -1406,6 +1620,15 @@ function ttsInitPanel(){
     <button class="tts-ico" data-act="close" title="收起">✕</button>
   `;
   document.body.appendChild(panel);
+  syncTtsDock();
+  window.addEventListener('resize', syncTtsDock);
+  if (window.ResizeObserver) {
+    const dockObserver = new ResizeObserver(syncTtsDock);
+    const inputArea = document.querySelector('.input-area');
+    const quickReplies = document.getElementById('quick-replies');
+    if (inputArea) dockObserver.observe(inputArea);
+    if (quickReplies) dockObserver.observe(quickReplies);
+  }
 
   panel.querySelector('[data-act="rate"]').value = String(ttsGetRate());
 
@@ -1463,7 +1686,7 @@ function showTyping() {
   div.id = 'typing-indicator';
   div.setAttribute('aria-hidden', 'true');
   div.innerHTML = `
-    <div class="avatar coach">🐍</div>
+    <div class="avatar coach">PY</div>
     <div class="bubble">
       <div class="typing">
         <div class="dot"></div><div class="dot"></div><div class="dot"></div>
@@ -1478,11 +1701,43 @@ function removeTyping() {
   if (el) el.remove();
 }
 
+function finishCoachRequest() {
+  removeTyping();
+  isLoading = false;
+  document.getElementById('send-btn').disabled = false;
+}
+
+function showLocalLessonFallback(userMsg, notice = '') {
+  finishCoachRequest();
+  if (notice) {
+    addSystemNotice(`## CONNECTION FALLBACK
+
+${notice}
+
+已切換到內建課程內容，你仍然可以繼續目前的任務。`);
+  }
+  addMessage('coach', localCoachReply(userMsg), { kind: 'local' });
+  if (currentChapter) {
+    setQuickReplies([
+      '給我一個範例程式碼',
+      '再解釋一次',
+      '給我一道練習題',
+      '這個在工作上怎麼用？'
+    ]);
+  }
+}
+
 async function callAPI(userMsg) {
   if (isLoading) return;
   isLoading = true;
   document.getElementById('send-btn').disabled = true;
   showTyping();
+
+  if (IS_FILE_PREVIEW) {
+    await new Promise(resolve => setTimeout(resolve, 140));
+    showLocalLessonFallback(userMsg);
+    return;
+  }
 
   // history 最後一筆本來就是當前 userMsg（addMessage 在呼叫 callAPI 前已存入），
   // 原樣轉成 API 需要的 {role, content} 格式即可，不做過濾（過濾會誤刪重複文字的舊訊息，
@@ -1499,7 +1754,7 @@ async function callAPI(userMsg) {
   const ctrl = new AbortController();
   const timeout = setTimeout(() => ctrl.abort(), 45_000);
   try {
-    const resp = await fetch(API_BASE + '/api/chat', {
+    const resp = await fetch(apiUrl('chat'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       signal: ctrl.signal,
@@ -1511,18 +1766,19 @@ async function callAPI(userMsg) {
     });
 
     if (!resp.ok) {
-      removeTyping();
-      const errMap = {
-        401: '❌ 後端未設定 ANTHROPIC_KEY 或金鑰無效。請在部署平台的環境變數填入正確的 Claude API key。',
-        404: `❌ 找不到後端 /chat（HTTP 404）。\n\n可能原因：\n1. 前端部署在靜態主機（Netlify/Vercel/GitHub Pages），沒有 Node 後端\n2. 後端網址沒設定\n\n解決方式：\n• 部署 server.js（Render / Railway / Fly.io）\n• 在 index.html <head> 加入：\n  <meta name="api-base" content="https://你的後端網址">\n\n目前 API_BASE = "${API_BASE||'（同源相對路徑）'}"`,
-        429: '⏳ 請求過於頻繁或 API 額度已用完，請稍後再試。',
-        502: '🌐 後端無法連到 Anthropic，請檢查伺服器網路或 key 是否有效。',
-        529: '🔧 Anthropic 伺服器目前過載，請稍等片刻再重試。',
+      const fallbackMap = {
+        401: 'AI 金鑰尚未設定或已失效。',
+        403: '目前來源不在 API 的允許清單中。',
+        404: '找不到 AI Coach API 路由。',
+        429: '請求過於頻繁或 API 額度暫時用完。',
+        500: '本機 AI 金鑰尚未設定，或伺服器發生錯誤。',
+        502: '後端暫時無法連到 AI 服務。',
+        529: 'AI 服務目前忙碌中。',
       };
-      const msg = errMap[resp.status] || `❌ 發生錯誤（HTTP ${resp.status}），請稍後再試。`;
-      addMessage('coach', msg);
-      isLoading = false;
-      document.getElementById('send-btn').disabled = false;
+      showLocalLessonFallback(
+        userMsg,
+        fallbackMap[resp.status] || `AI Coach 暫時無法使用（HTTP ${resp.status}）。`
+      );
       return;
     }
 
@@ -1530,9 +1786,7 @@ async function callAPI(userMsg) {
     removeTyping();
 
     if (data.error) {
-      addMessage('coach', '❌ API 錯誤：' + data.error.message);
-      isLoading = false;
-      document.getElementById('send-btn').disabled = false;
+      showLocalLessonFallback(userMsg, 'AI Coach 回傳了無法完成的結果。');
       return;
     }
 
@@ -1542,29 +1796,27 @@ async function callAPI(userMsg) {
     // Suggest follow-up chips based on context
     if (currentChapter) {
       setQuickReplies([
-        '📝 再給我一個例子',
-        '🧩 給我一道練習題',
-        '🤔 我有點混淆，再說清楚',
-        '➡️ 繼續教下一個概念'
+        '再給我一個例子',
+        '給我一道練習題',
+        '把差異說清楚',
+        '繼續教下一個概念'
       ]);
     }
   } catch (e) {
-    removeTyping();
     if (e.name === 'AbortError') {
-      addMessage('coach', '⏳ 請求逾時（45 秒），伺服器可能忙碌中，請稍後再試。');
+      showLocalLessonFallback(userMsg, 'AI Coach 等候超過 45 秒。');
     } else if (!navigator.onLine) {
-      addMessage('coach', '🌐 網路已斷線，請確認網路連線後再試。');
+      showLocalLessonFallback(userMsg, '目前沒有網路連線。');
     } else if (e instanceof TypeError) {
-      addMessage('coach', '🌐 無法連線至 API 伺服器，請檢查網路或防火牆設定。');
+      showLocalLessonFallback(userMsg, '無法連線至 AI Coach。');
     } else {
-      addMessage('coach', '😅 連線失敗，請重新整理頁面再試一次。');
+      showLocalLessonFallback(userMsg, 'AI Coach 暫時無法完成這次回覆。');
     }
   } finally {
     clearTimeout(timeout);
   }
 
-  isLoading = false;
-  document.getElementById('send-btn').disabled = false;
+  if (isLoading) finishCoachRequest();
 }
 
 function sendMessage() {
@@ -1588,19 +1840,27 @@ function handleKey(e) {
 function autoResize(el) {
   el.style.height = '';
   el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  requestAnimationFrame(syncTtsDock);
 }
 
 function clearChat() {
+  if (isLoading) return;
   history = [];
   const area = document.getElementById('chat-area');
   area.innerHTML = `
-    <div class="welcome-card">
-      <div class="wc-emoji">🐍</div>
-      <h2>對話已清除！</h2>
-      <p>選擇左側章節繼續學習，或直接問我問題 ✨</p>
-      <div class="start-chips">
-        <button class="start-chip" onclick="startLesson(0)">🚀 從頭開始</button>
-        <button class="start-chip" onclick="askQuestion('幫我出一道 Python 練習題')">🧩 給我題目</button>
+    <div class="welcome-card reset-card">
+      <div class="welcome-copy">
+        <div class="welcome-kicker"><span></span> SESSION RESET</div>
+        <h2>CLEAN SLATE.<br><em>SAME PROGRESS.</em></h2>
+        <p class="welcome-intro">對話已清除，章節完成紀錄仍然保留。選擇一個任務繼續，或直接丟一段程式碼給我檢查。</p>
+        <div class="start-chips">
+          <button class="start-chip primary-start" onclick="startLesson(0)">從第一個任務開始 <span>↗</span></button>
+          <button class="start-chip" onclick="askQuestion('幫我出一道 Python 練習題')">給我一道練習題</button>
+        </div>
+      </div>
+      <div class="reset-visual" aria-hidden="true">
+        <span>&gt;&gt;&gt; history.clear()</span>
+        <strong>READY_</strong>
       </div>
     </div>`;
   document.getElementById('quick-replies').innerHTML = '';
@@ -1610,13 +1870,13 @@ function updateMarkDoneBtn() {
   const btn = document.getElementById('mark-done-btn');
   if (!btn) return;
   btn.textContent = (currentChapter && done.has(currentChapter.id))
-    ? '✓ 已完成（點擊取消）'
-    : '✓ 學完了！';
+    ? '已完成 · 取消 ↙'
+    : '完成任務 ↗';
 }
 
 function markDone() {
   if (!currentChapter) {
-    addMessage('coach', '請先從左側選擇一個章節，學完後再點「學完了！」哦 😊');
+    addMessage('coach', '請先從左側選擇一個章節，完成後再按「完成任務」。');
     return;
   }
 
@@ -1639,7 +1899,10 @@ function markDone() {
     const next = CHAPTERS[nextId];
     const tag = next.bonus ? '⭐ 補充技能' : '下一章節';
     addMessage('coach', `🎉 太棒了！「${currentChapter.title}」已學完！\n\n${tag}是 **${next.emoji} ${next.title}**，要繼續嗎？`);
-    setQuickReplies([`▶️ 繼續學「${next.title}」`, '😌 先休息一下']);
+    setQuickReplies([
+      { label: `繼續學「${next.title}」`, action: () => startLesson(next.id) },
+      '先休息一下'
+    ]);
   } else {
     addMessage('coach', `🎊 恭喜你！課程章節 + 三個補充技能全部完成！\n\n你現在具備了紮實的 Python 基礎、職場必備的 Git、檔案讀寫和 Type Hints，已經有能力開發真實專案了！`);
   }
@@ -1656,7 +1919,9 @@ function closeSidebar() {
 }
 
 // Init
+syncRuntimeStatus();
 renderSidebar();
+requestAnimationFrame(syncTtsDock);
 </script>
 </body>
 </html>
